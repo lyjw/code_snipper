@@ -1,0 +1,7 @@
+<h1>All Snippets</h1>
+
+<% @snippets.each do |snippet| %>
+  <div>
+    <%= link_to snippet.title, snippet_path(snippet) %>
+  </div>
+<% end %>
