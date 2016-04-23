@@ -1,0 +1,31 @@
+<h1>Edit Snippet</h1>
+
+<% if @snippet.errors %>
+  <ul>
+    <% @snippet.errors.full_messages.each do |error| %>
+      <li><%= error %></li>
+    <% end %>
+  </ul>
+<% end %>
+
+
+<%= form_for @snippet do |f| %>
+
+  <div>
+    <%= f.label :kind %>
+    <%= f.collection_select :kind_id, Kind.order(:name), :id, :name %>
+  </div>
+
+  <div>
+    <%= f.label :title %>
+    <%= f.text_field :title %>
+  </div>
+
+  <div>
+    <%= f.label :work %>
+    <%= f.text_area :work %>
+  </div>
+
+  <%= f.submit "Edit Snippet" %>
+
+<% end %>

@@ -1,55 +1,24 @@
 module ApplicationHelper
 
-  require 'redcarpet'
-  require 'rouge'
-  require 'rouge/plugins/redcarpet'
-
-
-  class MarkdownService
-
-    class Renderer < Redcarpet::Render::HTML
-      include Rouge::Plugins::Redcarpet
+  class CodeRayify < Redcarpet::Render::HTML
+    def block_code(code, language)
+      CodeRay.scan(code, language).div
     end
+  end
 
-    attr_reader :markdown
-
-    def self.call(markdown)
-      new(markdown).call
-    end
-
-    def initialize(markdown)
-      @markdown = markdown
-    end
-
-    def call
-      render
-    end
-
-    private
-
-    def markdown_renderer
-      render_options = {
-        filter_html:  true,
-        hard_wrap:    true
-      }
-
-      renderer = Renderer.new(render_options)
-
-      extensions = {
-        fenced_code_blocks: true,
-        lax_spacing:        true,
-        strikethrough:      true,
-        superscript:        true,
-        highlight:          true
-      }
-
-      Redcarpet::Markdown.new(renderer, extensions)
-    end
-
-    def render
-      markdown_renderer.render(markdown).html_safe
-    end
-
+  def markdown(text)
+    coderayified = CodeRayify.new(:filter_html => true,
+                                  :hard_wrap => true)
+    options = {
+      :fenced_code_blocks => true,
+      :no_intra_emphasis => true,
+      :autolink => true,
+      :strikethrough => true,
+      :lax_html_blocks => true,
+      :superscript => true
+    }
+    markdown_to_html = Redcarpet::Markdown.new(coderayified, options)
+    markdown_to_html.render(text).html_safe
   end
 
 end

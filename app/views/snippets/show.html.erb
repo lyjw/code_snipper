@@ -6,4 +6,8 @@ Language: <%= @snippet.language %>
 
 <hr>
 
-<%= @random %>
+<%= markdown(@snippet.work) %>
+
+<hr>
+
+<%= link_to "Edit", edit_snippet_path(@snippet) %>

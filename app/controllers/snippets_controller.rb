@@ -1,6 +1,7 @@
 class SnippetsController < ApplicationController
 
   def index
+    @kinds = Kind.all
     @snippets = Snippet.all
   end
 
@@ -9,25 +10,38 @@ class SnippetsController < ApplicationController
   end
 
   def create
-    snippet_params = params.require(:snippet).permit([:kind, :title, :work])
+    snippet_params = params.require(:snippet).permit([:kind_id, :title, :work])
     @snippet = Snippet.new snippet_params
+
+    if @snippet.language != "Markdown"
+      @snippet.work = "```#{@snippet.language}\n" + @snippet.work + "\n```"
+    end
 
     if @snippet.save
       redirect_to snippet_path(@snippet), notice: "Snippet created!"
     else
-      flash[:alert] = "Invalid. Snippet not created."
+      flash[:alert] = 'Invalid. Snippet not created.'
       render :new
     end
   end
 
   def show
     @snippet = Snippet.find params[:id]
-    a = ApplicationHelper::MarkdownService.new(@snippet.work)
-    @random = a.call
-    # @random = HTML.new.block_code(@snippet.work, ruby)
   end
 
   def edit
+    @snippet = Snippet.find params[:id]
+  end
+
+  def update
+    @snippet = Snippet.find params[:id]
+    snippet_params = params.require(:snippet).permit([:kind_id, :title, :work])
+
+    if @snippet.update snippet_params
+      redirect_to snippet_path(@snippet), notice: "Updated!"
+    else
+      render :edit
+    end
 
   end
 

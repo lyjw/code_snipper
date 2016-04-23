@@ -1,7 +1,11 @@
 <h1>All Snippets</h1>
 
-<% @snippets.each do |snippet| %>
-  <div>
-    <%= link_to snippet.title, snippet_path(snippet) %>
-  </div>
+<% @kinds.each do |kind| %>
+
+  <% if kind.snippets.count != 0 %>
+    <div>
+      <%= link_to "#{kind.name} (#{ kind.snippets.count } snippets)", kind_path(kind)  %>
+    </div>
+  <% end %>
+
 <% end %>
