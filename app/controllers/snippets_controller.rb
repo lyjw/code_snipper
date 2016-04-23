@@ -22,10 +22,9 @@ class SnippetsController < ApplicationController
 
   def show
     @snippet = Snippet.find params[:id]
-
+    a = ApplicationHelper::MarkdownService.new(@snippet.work)
+    @random = a.call
     # @random = HTML.new.block_code(@snippet.work, ruby)
-
-
   end
 
   def edit

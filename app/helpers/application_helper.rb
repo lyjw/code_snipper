@@ -4,26 +4,52 @@ module ApplicationHelper
   require 'rouge'
   require 'rouge/plugins/redcarpet'
 
-  class SyntaxHighlighter < Redcarpet::Render::HTML
-    include Rouge::Plugins::Redcarpet
-  end
 
-  def markdown(text)
-    render_options = {
-      filter_html:  true,
-      hard_wrap:    true
-    }
+  class MarkdownService
 
-    renderer = SyntaxHighlighter.new(render_options)
+    class Renderer < Redcarpet::Render::HTML
+      include Rouge::Plugins::Redcarpet
+    end
 
-    extensions = {
-      fenced_code_blocks: true,
-      lax_spacing:        true,
-      strikethrough:      true,
-      superscript:        true
-    }
+    attr_reader :markdown
 
-    @markdown ||= Redcarpet::Markdown.new(renderer, extensions).render(text).html_safe
+    def self.call(markdown)
+      new(markdown).call
+    end
+
+    def initialize(markdown)
+      @markdown = markdown
+    end
+
+    def call
+      render
+    end
+
+    private
+
+    def markdown_renderer
+      render_options = {
+        filter_html:  true,
+        hard_wrap:    true
+      }
+
+      renderer = Renderer.new(render_options)
+
+      extensions = {
+        fenced_code_blocks: true,
+        lax_spacing:        true,
+        strikethrough:      true,
+        superscript:        true,
+        highlight:          true
+      }
+
+      Redcarpet::Markdown.new(renderer, extensions)
+    end
+
+    def render
+      markdown_renderer.render(markdown).html_safe
+    end
+
   end
 
 end
