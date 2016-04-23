@@ -15,7 +15,6 @@ class SnippetsController < ApplicationController
     if @snippet.save
       redirect_to snippet_path(@snippet), notice: "Snippet created!"
     else
-      @snippet.work = "" if @snippet.errors[:work]
       flash[:alert] = 'Invalid. Snippet not created.'
       render :new
     end
