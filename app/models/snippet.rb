@@ -2,27 +2,22 @@ class Snippet < ActiveRecord::Base
   belongs_to :kind
 
   validates_presence_of :title, :work
+  validates :work, length: { minimum: 5 }
 
   def language
-    kind_id ? Kind.find(kind_id).name : "Text"
-  end
-
-  def content
-    MarkdownService.new.render(work).html_safe
-  end
-
-  def self.overview
-    where(kind_id: kind.id).count
-  end
-
-  def self.existing_kinds
-    a = self.group(:kind_id).count # { ["2", 10], [ kind_id, count ] }
-    b = a.select { |_, count| count > 0 }
-    byebug
+    kind_id ? Kind.find(kind_id).name : "Plain Text"
   end
 
   def kind_of
     kind_id ? Kind.find(kind_id).name : ""
+  end
+
+  def wrap_in_pre_tags
+    "```#{language}\n" + work + "\n```"
+  end
+
+  def is_markdown?
+    language == "Markdown"
   end
 
 end

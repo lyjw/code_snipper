@@ -6,7 +6,11 @@ Language: <%= @snippet.language %>
 
 <hr>
 
-<%= markdown(@snippet.work) %>
+<% if @snippet.is_markdown? %>
+  <%= markdown(@snippet.work) %>
+<% else %>
+  <%= markdown(@snippet.wrap_in_pre_tags) %>
+<% end %>
 
 <hr>
 
