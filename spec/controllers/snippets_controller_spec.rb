@@ -2,7 +2,7 @@ require 'rails_helper'
 
 RSpec.describe SnippetsController, type: :controller do
 
-  let(:snippet) { Snippet.create(title: "Title", work: "work")}
+  let(:snippet) { Snippet.create(title: "Title", work: "def example_method end")}
 
   describe "#new" do
 
@@ -21,20 +21,57 @@ RSpec.describe SnippetsController, type: :controller do
   describe "#create" do
 
     context "with valid params" do
-      it "adds a new Snippet record to the database"
-      it "redirect to the Snippet show page"
+
+      def valid_request
+        post :create, snippet: { title: "Ruby code", work: "def method end" }
+      end
+
+      it "adds a new Snippet record to the database" do
+        expect { valid_request }.to change { Snippet.count }.by 1
+      end
+
+      it "redirect to the Snippet show page" do
+        valid_request
+        expect(response).to redirect_to snippet_path(Snippet.last)
+      end
+
+      it "sets a flash message" do
+        valid_request
+        expect(flash[:notice]).to be
+      end
     end
 
     context "without valid params" do
-      it "does not add a new Snippet to the database"
-      it "renders the new page"
+
+      def invalid_request
+        post :create, snippet: { title: "", work: "" }
+      end
+
+      it "does not add a new Snippet to the database" do
+        expect { invalid_request }.to change { Snippet.count }.by 0
+      end
+
+      it "renders the new page" do
+        invalid_request
+        expect(response).to render_template(:new)
+      end
     end
 
   end
 
   describe "#show" do
-    it "renders the Snippet show template"
-    it "assigns a Snippet instance variable"
+
+    before do
+      get :show, id: snippet.id
+    end
+
+    it "renders the Snippet show template" do
+      expect(response).to render_template(:show)
+    end
+
+    it "assigns a Snippet instance variable" do
+      expect(assigns(:snippet)).to eq(snippet)
+    end
   end
 
   describe "#edit" do
@@ -92,9 +129,6 @@ RSpec.describe SnippetsController, type: :controller do
 
   end
 
-  describe "#index"
-
   # describe "#destroy"
-
 
 end
